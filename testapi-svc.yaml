@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: testapi-svc
+spec:
+  selector:
+    app: testapi-svc
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 5299
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 7199
+  type: LoadBalancer
+  
