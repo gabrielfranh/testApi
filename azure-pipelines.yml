@@ -53,13 +53,7 @@ steps:
     # Substitute the IMAGE_TAG in deployment.yaml
     envsubst < $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
 
-    # Check if the deployment exists
-    if kubectl get deployment/testapi-dp > /dev/null 2>&1; then
-        # Update the existing deployment with the new image
-        kubectl set image deployment/testapi-dp testapi-container=$(IMAGE_NAME):$(IMAGE_TAG)
-    else
-        # Apply the deployment and service manifests if they don't exist
-        kubectl apply -f $(System.DefaultWorkingDirectory)/deployment-subst.yaml
-        kubectl apply -f $(System.DefaultWorkingDirectory)/service.yaml
-    fi
+    # Apply the deployment and service manifests if they don't exist
+    kubectl apply -f $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+    kubectl apply -f $(System.DefaultWorkingDirectory)/service.yaml
   displayName: 'Create or Update Kubernetes Deployment'
