@@ -18,6 +18,7 @@ spec:
       containers:
         - name: testapi-container
           image: gabrielfranh/testapi:dev
+          imagePullPolicy: Always
           ports:
           - containerPort: 5299
           env:
