@@ -37,5 +37,6 @@ steps:
 # Apply the Kubernetes Deployment
 - script: |
     export KUBECONFIG=$(downloadKubeConfig.secureFilePath)
-    kubectl set image deployment/minha-api minha-api=$(IMAGE_NAME):$(IMAGE_TAG)
+    minha-api=$(IMAGE_NAME):$(IMAGE_TAG)
+    kubectl set image deployment/minha-api 
   displayName: 'Update deployment to new image'
