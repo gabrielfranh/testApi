@@ -12,7 +12,7 @@ steps:
 # Build and Push Docker Image
 - task: Docker@2
   inputs:
-    containerRegistry: '$(dockerRegistryServiceConnection)'
+    containerRegistry: 'DockerHubConnection'
     repository: '$(IMAGE_NAME)'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
