@@ -47,7 +47,7 @@ steps:
         kubectl set image deployment/testapi-dp testapi=$(IMAGE_NAME):$(IMAGE_TAG)
     else
         # Apply the deployment and service manifests if they don't exist
-        kubectl apply -f $(System.DefaultWorkingDirectory)/deployment.yaml
-        kubectl apply -f $(System.DefaultWorkingDirectory)/service.yaml
+        kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-dp.yaml
+        kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
     fi
   displayName: 'Create or Update Kubernetes Deployment'
