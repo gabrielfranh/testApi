@@ -65,11 +65,8 @@ steps:
     export AWS_DEFAULT_REGION=us-east-1
     export KUBECONFIG=$(downloadKubeConfig.secureFilePath)
 
-    export IMAGE_NAME=$(IMAGE_NAME)
-    export IMAGE_TAG=$(IMAGE_TAG)
-
-    # Substitute the IMAGE_TAG in deployment.yaml
-    envsubst < $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+    # Replace IMAGE_TAG in the deployment.yaml
+    sed "s|\${IMAGE_TAG}|${IMAGE_TAG}|g" $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
 
     # Apply the service manifest
     kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
