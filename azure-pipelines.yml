@@ -38,5 +38,5 @@ steps:
 - script: |
     export KUBECONFIG=$(downloadKubeConfig.secureFilePath)
     minha-api=$(IMAGE_NAME):$(IMAGE_TAG)
-    kubectl set image deployment/minha-api 
+    kubectl set image deployment/testapi-dp
   displayName: 'Update deployment to new image'
