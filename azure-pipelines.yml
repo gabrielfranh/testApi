@@ -18,11 +18,11 @@ steps:
     Dockerfile: '**/Dockerfile'                # Caminho para seu Dockerfile
     tags: '$(IMAGE_TAG)'
 
-# Install envsubst
+# Install sed
 - script: |
     sudo apt-get update
-    sudo apt-get install -y gettext
-  displayName: 'Install envsubst'
+    sudo apt-get install -y sed
+  displayName: 'Install sed'
 
 # Configure AWS CLI
 - script: |
@@ -65,8 +65,10 @@ steps:
     export AWS_DEFAULT_REGION=us-east-1
     export KUBECONFIG=$(downloadKubeConfig.secureFilePath)
 
+    export IMAGE_TAG=$(IMAGE_TAG)
+
     # Replace IMAGE_TAG in the deployment.yaml
-    sed "s|\${IMAGE_TAG}|${IMAGE_TAG}|g" $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+    sed "s|\$(IMAGE_TAG)|${IMAGE_TAG}|g" $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
 
     # Apply the service manifest
     kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
