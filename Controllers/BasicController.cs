@@ -7,12 +7,14 @@ namespace testApi.Controllers;
 public class BasicController : ControllerBase
 {
     [HttpGet]
+    [Route("Basic")]
     public IActionResult Basic()
     {
         return Ok();
     }
 
     [HttpGet]
+    [Route("Teste")]
     public IActionResult Test()
     {
         return Ok();
