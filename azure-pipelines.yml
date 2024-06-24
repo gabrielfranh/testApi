@@ -40,7 +40,25 @@ steps:
   inputs:
     secureFile: 'kubeconfig-eks'
 
-# Apply or Update Kubernetes Deployment and Service with Variable Substitution
+# Delete Existing Deployment and Service
+- script: |
+    export AWS_ACCESS_KEY_ID=$(awsAccessKeyId)
+    export AWS_SECRET_ACCESS_KEY=$(awsSecretAccessKey)
+    export AWS_DEFAULT_REGION=us-east-1
+    export KUBECONFIG=$(downloadKubeConfig.secureFilePath)
+
+    # Check if the deployment exists and delete it
+    if kubectl get deployment testapi-dp > /dev/null 2>&1; then
+        kubectl delete deployment testapi-dp
+    fi
+
+    # Check if the service exists and delete it
+    if kubectl get svc testapi-svc > /dev/null 2>&1; then
+        kubectl delete svc testapi-svc
+    fi
+  displayName: 'Delete Existing Kubernetes Deployment and Service'
+
+# Apply Kubernetes Service and Create Deployment with Variable Substitution
 - script: |
     export AWS_ACCESS_KEY_ID=$(awsAccessKeyId)
     export AWS_SECRET_ACCESS_KEY=$(awsSecretAccessKey)
@@ -53,15 +71,9 @@ steps:
     # Substitute the IMAGE_TAG in deployment.yaml
     envsubst < $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
 
-    # Apply the service manifest to ensure it is up-to-date
+    # Apply the service manifest
     kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
 
-    # Check if the deployment exists and update or apply it
-    if kubectl get deployment testapi-dp > /dev/null 2>&1; then
-        # Update the existing deployment with the new image
-        kubectl set image deployment/testapi-dp testapi-container=$(IMAGE_NAME):$(IMAGE_TAG)
-    else
-        # Apply the deployment manifest if it doesn't exist
-        kubectl apply -f $(System.DefaultWorkingDirectory)/deployment-subst.yaml
-    fi
-  displayName: 'Create or Update Kubernetes Deployment and Service'
+    # Apply the new deployment manifest
+    kubectl apply -f $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+  displayName: 'Apply Kubernetes Service and Create Deployment'
