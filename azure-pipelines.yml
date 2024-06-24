@@ -5,17 +5,17 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  IMAGE_NAME: 'gabrielfranh/testapi'  # Nome do repositório Docker Hub
-  IMAGE_TAG: '$(Build.BuildId)'       # Tag da imagem Docker
+  IMAGE_NAME: 'gabrielfranh/testapi'
+  IMAGE_TAG: '$(Build.BuildId)'
 
 steps:
 # Build and Push Docker Image
 - task: Docker@2
   inputs:
-    containerRegistry: 'DockerHubConnection'  # Nome da conexão Docker Hub
+    containerRegistry: 'DockerHubConnection'
     repository: '$(IMAGE_NAME)'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'                # Caminho para seu Dockerfile
+    Dockerfile: '**/Dockerfile'
     tags: '$(IMAGE_TAG)'
 
 # Install envsubst
@@ -47,15 +47,8 @@ steps:
     export AWS_DEFAULT_REGION=us-east-1
     export KUBECONFIG=$(downloadKubeConfig.secureFilePath)
 
-    # Check if the deployment exists and delete it
-    if kubectl get deployment testapi-dp > /dev/null 2>&1; then
-        kubectl delete deployment testapi-dp
-    fi
-
-    # Check if the service exists and delete it
-    if kubectl get svc testapi-svc > /dev/null 2>&1; then
-        kubectl delete svc testapi-svc
-    fi
+    kubectl delete deployment testapi-dp --ignore-not-found
+    kubectl delete svc testapi-svc --ignore-not-found
   displayName: 'Delete Existing Kubernetes Deployment and Service'
 
 # Apply Kubernetes Service and Create Deployment with Variable Substitution
@@ -68,13 +61,14 @@ steps:
     export IMAGE_NAME=$(IMAGE_NAME)
     export IMAGE_TAG=$(IMAGE_TAG)
 
-    # Substitute the IMAGE_TAG in deployment.yaml
-    #envsubst < $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
-    echo "$(envsubst '$(IMAGE_TAG)' <$(System.DefaultWorkingDirectory)/testapi-dp.yaml)" > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+    echo "Substituindo variáveis no deployment.yaml"
+    cat $(System.DefaultWorkingDirectory)/testapi-dp.yaml
 
-    # Apply the service manifest
+    envsubst < $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+
+    echo "Conteúdo de deployment-subst.yaml"
+    cat $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+
     kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
-
-    # Apply the new deployment manifest
     kubectl apply -f $(System.DefaultWorkingDirectory)/deployment-subst.yaml
   displayName: 'Apply Kubernetes Service and Create Deployment'
