@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: testapi-container
-          image: gabrielfranh/testapi:$(IMAGE_TAG)
+          image: gabrielfranh/testapi:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
           - containerPort: 5299
