@@ -3,17 +3,17 @@ kind: Deployment
 metadata:
   name: testapi-dp
   labels:
-    app: testapi-dp
+    app: testapi
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: testapi-dp
+      app: testapi
   template:
     metadata:
-      name: testapi-dp
+      name: testapi-pod
       labels:
-        app: testapi-dp
+        app: testapi
     spec:
       containers:
         - name: testapi-container

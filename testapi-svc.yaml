@@ -4,7 +4,7 @@ metadata:
   name: testapi-svc
 spec:
   selector:
-    app: testapi-svc
+    app: testapi
   ports:
     - name: http
       protocol: TCP
