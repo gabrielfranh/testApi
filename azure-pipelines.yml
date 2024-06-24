@@ -1,0 +1,31 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  IMAGE_NAME: 'gabrielfranh/testapi'
+  IMAGE_TAG: '$(Build.BuildId)'
+
+steps:
+# Build and Push Docker Image
+- task: Docker@2
+  inputs:
+    containerRegistry: '$(dockerRegistryServiceConnection)'
+    repository: '$(IMAGE_NAME)'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: '$(IMAGE_TAG)'
+
+# Download the Kubeconfig
+- task: DownloadSecureFile@1
+  name: downloadKubeConfig
+  inputs:
+    secureFile: 'kubeconfig-eks'
+
+# Apply the Kubernetes Deployment
+- script: |
+    export KUBECONFIG=$(downloadKubeConfig.secureFilePath)
+    kubectl set image deployment/minha-api minha-api=$(IMAGE_NAME):$(IMAGE_TAG)
+  displayName: 'Update deployment to new image'
