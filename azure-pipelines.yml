@@ -55,5 +55,5 @@ steps:
 
     # Apply the deployment and service manifests if they don't exist
     kubectl apply -f $(System.DefaultWorkingDirectory)/deployment-subst.yaml
-    kubectl apply -f $(System.DefaultWorkingDirectory)/service.yaml
+    kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
   displayName: 'Create or Update Kubernetes Deployment'
