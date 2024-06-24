@@ -69,7 +69,8 @@ steps:
     export IMAGE_TAG=$(IMAGE_TAG)
 
     # Substitute the IMAGE_TAG in deployment.yaml
-    envsubst < $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+    #envsubst < $(System.DefaultWorkingDirectory)/testapi-dp.yaml > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
+    echo "$(envsubst '${IMAGE_TAG}' <$(System.DefaultWorkingDirectory)/testapi-dp.yaml)" > $(System.DefaultWorkingDirectory)/deployment-subst.yaml
 
     # Apply the service manifest
     kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
