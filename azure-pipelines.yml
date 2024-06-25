@@ -72,3 +72,17 @@ steps:
     kubectl apply -f $(System.DefaultWorkingDirectory)/testapi-svc.yaml
     kubectl apply -f $(System.DefaultWorkingDirectory)/deployment-subst.yaml
   displayName: 'Apply Kubernetes Service and Create Deployment'
+  
+  # Autenticar no Docker Hub
+- script: |
+    echo $(dockerHubPassword) | docker login -u $(dockerHubUsername) --password-stdin
+  displayName: 'Login no Docker Hub'
+
+# Remover Imagens Antigas do Docker Hub
+- script: |
+    images=$(curl -s -u $(dockerHubUsername):$(dockerHubPassword) https://hub.docker.com/v2/repositories/gabrielfranh/testapi/tags/?page_size=100 | jq -r '.results|sort_by(.last_updated)|reverse|.[2:]|.[]|.name')
+    for image in $images; do
+      echo "Deleting image: gabrielfranh/testapi:$image"
+      curl -s -u $(dockerHubUsername):$(dockerHubPassword) -X DELETE https://hub.docker.com/v2/repositories/gabrielfranh/testapi/tags/$image/
+    done
+  displayName: 'Remover Imagens Antigas'
